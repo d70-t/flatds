@@ -6,6 +6,7 @@ from contextlib import closing
 
 MAGIC = np.array(list(map(ord, "FLATDS")), dtype="uint8")
 
+
 class FlatdsWriter(object):
     def __init__(self, filename):
         self.filename = filename
@@ -51,7 +52,7 @@ class FlatdsWriter(object):
                             "d": dim_indices}
         if attrs:
             self._vars[name]["attrs"] = attrs
-    
+
     def write_data_array(self, name, arr):
         return self.write_variale(name, arr.data, arr.dims, arr.attrs)
 
@@ -66,7 +67,7 @@ def write_xarray_dataset(filename, ds):
     with closing(FlatdsWriter(filename)) as w:
         for name, var in ds.variables.items():
             w.write_data_array(name, var)
-            
+
 
 def open_flatds(filename, writeable=False):
     data = np.memmap(filename, dtype="uint8", mode="r+" if writeable else "r")

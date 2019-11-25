@@ -4,6 +4,7 @@ import numpy as np
 
 BASEDIR = os.path.dirname(__file__)
 
+
 def test_read():
     ds = flatds.open_flatds(os.path.join(BASEDIR, "test.flatds"))
     assert "test" in ds
