@@ -14,12 +14,11 @@ setuptools.setup(
     url="https://github.com/d70-t/flatds",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=2.7',
+    python_requires='>=3',
     install_requires=[
         "numpy",
         "xarray",
