@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="flatds-tobi", # Replace with your own username
+    name="flatds",
     version="0.0.1",
     author="Tobias Kölling",
     author_email="tobias.koelling@physik.uni-muenchen.de",
