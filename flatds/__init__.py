@@ -6,11 +6,12 @@ from contextlib import closing
 
 MAGIC = np.array(list(map(ord, "FLATDS")), dtype="uint8")
 
+
 class FlatdsWriter(object):
     def __init__(self, filename):
         self.filename = filename
-        self.f = open(self.filename, "w")
-        self.f.write("FLATDS\x00\x00")
+        self.f = open(self.filename, "wb")
+        self.f.write(b"FLATDS\x00\x00")
         self._vars = {}
         self._dims = []
 
@@ -34,7 +35,7 @@ class FlatdsWriter(object):
         if len(dims) != len(array.shape):
             raise ValueError("dimension size and shape size missmatch")
 
-        dim_indices = map(self._add_dim, dims, array.shape)
+        dim_indices = list(map(self._add_dim, dims, array.shape))
 
         start = self.f.tell()
         align = array.dtype.alignment
@@ -51,14 +52,14 @@ class FlatdsWriter(object):
                             "d": dim_indices}
         if attrs:
             self._vars[name]["attrs"] = attrs
-    
+
     def write_data_array(self, name, arr):
         return self.write_variale(name, arr.data, arr.dims, arr.attrs)
 
     def _write_header(self):
         start = self.f.tell()
         header = {"vars": self._vars, "dims": self._dims}
-        msgpack.pack(header, self.f, use_bin_type=True)
+        msgpack.pack(header, self.f, use_bin_type=False)
         self.f.write(struct.pack("<Q", start))
 
 
@@ -66,7 +67,7 @@ def write_xarray_dataset(filename, ds):
     with closing(FlatdsWriter(filename)) as w:
         for name, var in ds.variables.items():
             w.write_data_array(name, var)
-            
+
 
 def open_flatds(filename, writeable=False):
     data = np.memmap(filename, dtype="uint8", mode="r+" if writeable else "r")
