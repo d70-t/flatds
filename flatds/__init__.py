@@ -82,7 +82,7 @@ def read_header(filename):
         return msgpack.unpackb(fds.read(header_end - header_location), raw=False)
 
 
-def open_flatds(filename, writeable=False):
+def open_flatds(filename, writeable=False, with_dask=False):
     data = np.memmap(filename, dtype="uint8", mode="r+" if writeable else "r")
     if np.any(data[:len(MAGIC)] != MAGIC):
         raise ValueError("file \"{}\" is not a flatds file".format(filename))
@@ -105,6 +105,9 @@ def open_flatds(filename, writeable=False):
         d = d.view(dtype=props["t"])
         d = np.lib.stride_tricks.as_strided(d, shape, props["st"], subok=True, writeable=writeable)
         attrs = props.get("attrs", {})
+        if with_dask:
+            import dask.array as da
+            d = da.from_array(d)
         return xr.DataArray(d, dims=dims, attrs=attrs)
 
     variables = {name: get_var(p) for name, p in header["vars"].items()}
