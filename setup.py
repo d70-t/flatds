@@ -24,4 +24,9 @@ setuptools.setup(
         "xarray",
         "msgpack",
     ],
+    entry_points={
+        "console_scripts": [
+            "flatdsh5 = flatds.flatdsh5:_main",
+        ],
+    }
 )

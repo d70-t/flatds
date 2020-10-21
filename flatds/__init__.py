@@ -68,6 +68,19 @@ def write_xarray_dataset(filename, ds):
         for name, var in ds.variables.items():
             w.write_data_array(name, var)
 
+def read_header(filename):
+    with open(filename, "rb") as fds:
+        begin = fds.read(8)
+        if not begin.startswith(b"FLATDS"):
+            raise ValueError("file \"{}\" is not a flatds file".format(filename))
+        if begin[6] != 0:
+            raise ValueError("unknown header location")
+        fds.seek(-8, 2)
+        header_end = fds.tell()
+        header_location, = struct.unpack("<Q", fds.read(8))
+        fds.seek(header_location, 0)
+        return msgpack.unpackb(fds.read(header_end - header_location), raw=False)
+
 
 def open_flatds(filename, writeable=False):
     data = np.memmap(filename, dtype="uint8", mode="r+" if writeable else "r")
